@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package envoy.extensions.filters.http.ai_statistic.v3;
+
+import "udpa/annotations/status.proto";
+import "validate/validate.proto";
+
+option java_package = "io.envoyproxy.envoy.extensions.filters.http.ai_statistic.v3";
+option java_outer_classname = "AiStatisticProto";
+option java_multiple_files = true;
+option go_package = "github.com/envoyproxy/go-control-plane/envoy/extensions/filters/http/ai_statistic/v3;ai_statisticv3";
+option (udpa.annotations.file_status).package_version_status = ACTIVE;
+
+// [#protodoc-title: Kill Request]
+// Kill Request :ref:`configuration overview <config_http_filters_ai_statistic>`.
+// [#extension: envoy.filters.http.ai_statistic]
+
+// Configuration for AIStatistic filter.
+message AIStatistic {
+  string placeholder = 1;
+}

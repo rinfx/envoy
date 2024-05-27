@@ -96,6 +96,8 @@ public:
   const std::string OAuth = "envoy.filters.http.oauth2";
   // KillRequest filter
   const std::string KillRequest = "envoy.filters.http.kill_request";
+  // AIStatistic filter
+  const std::string AIStatistic = "envoy.filters.http.ai_statistic";
   // External Processing filter
   const std::string ExternalProcessing = "envoy.filters.http.ext_proc";
   // Set metadata filter

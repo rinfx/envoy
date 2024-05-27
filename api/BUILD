@@ -162,6 +162,7 @@ proto_library(
         "//envoy/extensions/filters/common/set_filter_state/v3:pkg",
         "//envoy/extensions/filters/http/adaptive_concurrency/v3:pkg",
         "//envoy/extensions/filters/http/admission_control/v3:pkg",
+        "//envoy/extensions/filters/http/ai_statistic/v3:pkg",
         "//envoy/extensions/filters/http/alternate_protocols_cache/v3:pkg",
         "//envoy/extensions/filters/http/aws_lambda/v3:pkg",
         "//envoy/extensions/filters/http/aws_request_signing/v3:pkg",
