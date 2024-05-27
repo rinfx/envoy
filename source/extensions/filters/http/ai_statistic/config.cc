@@ -14,6 +14,7 @@ namespace AIStatistic {
 Http::FilterFactoryCb AIStatisticFilterFactory::createFilterFactoryFromProtoTyped(
     const envoy::extensions::filters::http::ai_statistic::v3::AIStatistic& proto_config,
     const std::string& stats_prefix, Server::Configuration::FactoryContext& context) {
+  // Stats::StatNameManagedStorage prefix(stats_prefix, context.scope().symbolTable());
   FilterConfigSharedPtr config =
       std::make_unique<FilterConfig>(proto_config, stats_prefix, context.scope());
   return [config](Http::FilterChainFactoryCallbacks& callbacks) -> void {

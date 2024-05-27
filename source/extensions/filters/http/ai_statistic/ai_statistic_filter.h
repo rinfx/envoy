@@ -37,12 +37,12 @@ public:
     const std::string& stats_prefix, Stats::Scope& scope);
 
   const AIStatisticStats& stats() const { return stats_; }
-  const Stats::ScopeSharedPtr scope() const { return scope_; }
+  const Stats::Scope& scope() const { return scope_; }
   Stats::StatNameDynamicPool& statNamePool() { return stat_name_pool_; }
 
   void addCounter(const Stats::StatNameVec& names, int delta) const {
-    const Stats::SymbolTable::StoragePtr stat_name_storage = scope_->symbolTable().join(names);
-    scope_->counterFromStatName(Stats::StatName(stat_name_storage.get())).add(delta);
+    const Stats::SymbolTable::StoragePtr stat_name_storage = scope_.symbolTable().join(names);
+    scope_.counterFromStatName(Stats::StatName(stat_name_storage.get())).add(delta);
   }
 
 private:
@@ -51,10 +51,15 @@ private:
   }
 
   std::string placeholder_;
-  // Stats::Scope& scope_;
-  Stats::ScopeSharedPtr scope_;
+  Stats::Scope& scope_;
   Stats::StatNameDynamicPool stat_name_pool_;
   AIStatisticStats stats_;
+
+public:
+  const Stats::StatName filter_stat_prefix_;
+  const Stats::StatName route_;
+  const Stats::StatName input_token_;
+  const Stats::StatName output_token_;
 };
 
 using FilterConfigSharedPtr = std::shared_ptr<FilterConfig>;
@@ -72,11 +77,11 @@ public:
   void onDestroy() override {}
 
   // Http::StreamDecoderFilter
-  Http::FilterHeadersStatus decodeHeaders(Http::RequestHeaderMap&, bool) override;
-
-  Http::FilterDataStatus decodeData(Buffer::Instance&, bool) override {
-    return Http::FilterDataStatus::Continue;
+  Http::FilterHeadersStatus decodeHeaders(Http::RequestHeaderMap&, bool) override {
+    return Http::FilterHeadersStatus::Continue;
   }
+
+  Http::FilterDataStatus decodeData(Buffer::Instance&, bool) override;
 
   Http::FilterTrailersStatus decodeTrailers(Http::RequestTrailerMap&) override {
     return Http::FilterTrailersStatus::Continue;
@@ -113,11 +118,9 @@ private:
   FilterConfigSharedPtr config_;
   Http::StreamDecoderFilterCallbacks* decoder_callbacks_{};
   Http::StreamEncoderFilterCallbacks* encoder_callbacks_{};
-  const Stats::StatName route_;
-  const Stats::StatName input_token_;
-  const Stats::StatName output_token_;
   int input_tokens_=0;
   int output_tokens_=0;
+  std::string model_="";
 };
 
 } // namespace AIStatistic
