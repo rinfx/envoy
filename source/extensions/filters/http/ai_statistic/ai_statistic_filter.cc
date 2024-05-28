@@ -84,6 +84,13 @@ Http::FilterDataStatus AIStatisticFilter::encodeData(Buffer::Instance& data, boo
         config_->statNamePool().add(model_),
         config_->output_token_}, output_tokens_);
     }
+    ProtobufWkt::Struct metrics;
+    auto& fields = *metrics.mutable_fields();
+    *fields["model"].mutable_string_value() = model_;
+    *fields["input_token"].mutable_string_value() = std::to_string(input_tokens_);
+    *fields["output_token"].mutable_string_value() = std::to_string(output_tokens_);
+    encoder_callbacks_->streamInfo().setDynamicMetadata("envoy.filters.http.ai_statistic", metrics);
+
     return Http::FilterDataStatus::Continue;
   }
 
@@ -111,8 +118,9 @@ Http::FilterDataStatus AIStatisticFilter::encodeData(Buffer::Instance& data, boo
   }
   output_tokens_ = output_tokens;
   
-  ENVOY_LOG(info, "AIStatisticFilter input tokens {}, output tokens {}", input_tokens, output_tokens);
-  ENVOY_LOG(info, "AIStatisticFilter response body: {}", data.toString());
+  ENVOY_LOG(debug, "AIStatisticFilter input tokens {}, output tokens {}", input_tokens, output_tokens);
+  ENVOY_LOG(debug, "AIStatisticFilter response body: {}", data.toString());
+
   return Http::FilterDataStatus::Continue;
 }
 

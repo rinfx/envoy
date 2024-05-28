@@ -8,6 +8,7 @@
 
 #include "source/common/http/header_utility.h"
 #include "source/common/http/headers.h"
+#include <sstream>
 
 namespace Envoy {
 namespace Extensions {
@@ -38,7 +39,7 @@ public:
 
   const AIStatisticStats& stats() const { return stats_; }
   const Stats::Scope& scope() const { return scope_; }
-  Stats::StatNameDynamicPool& statNamePool() { return stat_name_pool_; }
+  Stats::StatNamePool& statNamePool() { return stat_name_pool_; }
 
   void addCounter(const Stats::StatNameVec& names, int delta) const {
     const Stats::SymbolTable::StoragePtr stat_name_storage = scope_.symbolTable().join(names);
@@ -52,7 +53,7 @@ private:
 
   std::string placeholder_;
   Stats::Scope& scope_;
-  Stats::StatNameDynamicPool stat_name_pool_;
+  Stats::StatNamePool stat_name_pool_;
   AIStatisticStats stats_;
 
 public:
@@ -106,7 +107,13 @@ public:
     return Http::FilterTrailersStatus::Continue;
   }
 
-  Http::FilterMetadataStatus encodeMetadata(Http::MetadataMap&) override {
+  Http::FilterMetadataStatus encodeMetadata(Http::MetadataMap& m) override {
+    m.insert(std::make_pair("input_token", "20"));
+    std::stringstream s;
+    s << m;
+    std::string metadata_str;
+    s >> metadata_str;
+    ENVOY_LOG(info, "metadata is {}", metadata_str);
     return Http::FilterMetadataStatus::Continue;
   }
 
@@ -120,7 +127,7 @@ private:
   Http::StreamEncoderFilterCallbacks* encoder_callbacks_{};
   int input_tokens_=0;
   int output_tokens_=0;
-  std::string model_="";
+  std::string model_;
 };
 
 } // namespace AIStatistic
