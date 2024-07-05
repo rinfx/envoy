@@ -119,6 +119,10 @@ void Span::setAttribute(absl::string_view name, const OTelAttribute& attribute_v
   key_value.set_key(std::string{name});
   *key_value.mutable_value() = value_proto;
   *span_.add_attributes() = key_value;
+  ENVOY_LOG(info, "trace attribute - {}: {}", key_value.key(), key_value.value().string_value());
+  if (name == "http.status_code") {
+    return;
+  }
 }
 
 void Span::setTag(absl::string_view name, absl::string_view value) { setAttribute(name, value); }

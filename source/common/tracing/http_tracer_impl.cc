@@ -1,6 +1,7 @@
 #include "source/common/tracing/http_tracer_impl.h"
 
 #include <string>
+#include <variant>
 
 #include "envoy/config/core/v3/base.pb.h"
 #include "envoy/network/address.h"
@@ -162,6 +163,12 @@ void HttpTracerUtility::finalizeDownstreamSpan(Span& span,
     if (request_headers->ClientTraceId()) {
       span.setTag(Tracing::Tags::get().GuidXClientTraceId,
                   request_headers->getClientTraceIdValue());
+    }
+
+    for (const auto& it: stream_info.filterState().getDataStorage()) {
+      if (it.first.find("wasm.") != std::variant_npos) {
+        span.setTag(it.first, it.second->data_->serializeAsString().value());
+      }
     }
 
     if (Grpc::Common::isGrpcRequestHeaders(*request_headers)) {
