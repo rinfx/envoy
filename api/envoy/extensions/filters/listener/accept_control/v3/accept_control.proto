@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package envoy.extensions.filters.listener.accept_control.v3;
+
+import "envoy/config/core/v3/address.proto";
+
+import "udpa/annotations/status.proto";
+import "validate/validate.proto";
+
+option java_package = "io.envoyproxy.envoy.extensions.filters.listener.accept_control.v3";
+option java_outer_classname = "AcceptControlProto";
+option java_multiple_files = true;
+option go_package = "github.com/envoyproxy/go-control-plane/envoy/extensions/filters/listener/accept_control/v3;accept_controlv3";
+option (udpa.annotations.file_status).package_version_status = ACTIVE;
+
+// [#protodoc-title: Accept Control Filter]
+// Decide whether a connection should be accept.
+// [#extension: envoy.filters.listener.accept_control]
+
+// The Accept Control filter
+message AcceptControl {
+  enum Action {
+    ALLOW = 0;
+    DENY = 1;
+  }
+
+  string stat_prefix = 1 [(validate.rules).string = {min_len: 1}];
+
+  Action action = 2 [(validate.rules).enum = {defined_only: true}];
+
+  repeated config.core.v3.CidrRange ip_list = 3;
+}
