@@ -166,8 +166,8 @@ void HttpTracerUtility::finalizeDownstreamSpan(Span& span,
     }
 
     for (const auto& it: stream_info.filterState().getDataStorage()) {
-      if (it.first.find("wasm.") != std::variant_npos) {
-        span.setTag(it.first, it.second->data_->serializeAsString().value());
+      if (it.first.size() > 5 && it.first.substr(0, 5) == "wasm.") {
+        span.setTag(it.first.substr(5), it.second->data_->serializeAsString().value());
       }
     }
 
