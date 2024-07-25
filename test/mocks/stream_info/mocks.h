@@ -169,6 +169,8 @@ public:
   MOCK_METHOD(absl::string_view, downstreamTransportFailureReason, (), (const));
   MOCK_METHOD(bool, shouldDrainConnectionUponCompletion, (), (const));
   MOCK_METHOD(void, setShouldDrainConnectionUponCompletion, (bool));
+  MOCK_METHOD(void, setCustomSpanTag, (absl::string_view, absl::string_view));
+  MOCK_METHOD((const absl::flat_hash_map<std::string, std::string>&), getCustomSpanTagMap, (), (const));
 
   Envoy::Event::SimulatedTimeSystem ts_;
   SystemTime start_time_;
@@ -194,6 +196,7 @@ public:
   absl::optional<std::string> virtual_cluster_name_;
   DownstreamTiming downstream_timing_;
   std::string downstream_transport_failure_reason_;
+  absl::flat_hash_map<std::string, std::string> custom_span_tags_;
 };
 
 } // namespace StreamInfo

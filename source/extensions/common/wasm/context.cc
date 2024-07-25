@@ -69,6 +69,7 @@ namespace {
 
 // FilterState prefix for CelState values.
 constexpr absl::string_view CelStateKeyPrefix = "wasm.";
+constexpr absl::string_view CustomeTraceSpanTagPrefix = "trace_span_tag.";
 
 using HashPolicy = envoy::config::route::v3::RouteAction::HashPolicy;
 using CelState = Filters::Common::Expr::CelState;
@@ -1128,8 +1129,8 @@ WasmResult Context::setProperty(std::string_view path, std::string_view value) {
   if (!stream_info) {
     return WasmResult::NotFound;
   }
-  if (path.size() > 6 && path.substr(0, 6) == "trace.") {
-    stream_info->setWasmAttribute(path.substr(6), value);
+  if (absl::StartsWith(path, CustomeTraceSpanTagPrefix)) {
+    stream_info->setCustomSpanTag(path.substr(CustomeTraceSpanTagPrefix.size()), value);
     return WasmResult::Ok;
   }
   std::string key;

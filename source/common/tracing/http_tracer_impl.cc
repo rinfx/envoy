@@ -165,17 +165,6 @@ void HttpTracerUtility::finalizeDownstreamSpan(Span& span,
                   request_headers->getClientTraceIdValue());
     }
 
-    // for (const auto& it: stream_info.filterState().getDataStorage()) {
-    //   if (it.first.size() > 5 && it.first.substr(0, 5) == "wasm.") {
-    //     span.setTag(it.first.substr(5), it.second->data_->serializeAsString().value());
-    //   }
-    // }
-
-    const auto& wasm_attributes = stream_info.getWasmAttributeMap();
-    for (const auto& it: wasm_attributes) {
-      span.setTag(it.first, it.second);
-    }
-
     if (Grpc::Common::isGrpcRequestHeaders(*request_headers)) {
       addGrpcRequestTags(span, *request_headers);
     }
@@ -229,6 +218,12 @@ void HttpTracerUtility::setCommonTags(Span& span, const StreamInfo::StreamInfo& 
                                       const Config& tracing_config) {
 
   span.setTag(Tracing::Tags::get().Component, Tracing::Tags::get().Proxy);
+
+  // Wasm filter state
+  const auto& custom_span_tags = stream_info.getCustomSpanTagMap();
+  for (const auto& it: custom_span_tags) {
+    span.setTag(it.first, it.second);
+  }
 
   // Cluster info.
   if (auto cluster_info = stream_info.upstreamClusterInfo();

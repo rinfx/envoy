@@ -428,17 +428,17 @@ struct StreamInfoImpl : public StreamInfo {
     should_drain_connection_ = should_drain;
   }
 
-  void setWasmAttribute(std::string_view key, std::string_view value) override {
-    auto it = wasm_attributes_.find(key);
-    if (it != wasm_attributes_.end()) {
+  void setCustomSpanTag(std::string_view key, std::string_view value) override {
+    auto it = custom_span_tags_.find(key);
+    if (it != custom_span_tags_.end()) {
       it->second = value;
     } else {
-      wasm_attributes_.emplace(key, value);
+      custom_span_tags_.emplace(key, value);
     }
   }
 
-  const absl::flat_hash_map<std::string, std::string>& getWasmAttributeMap() const override {
-    return wasm_attributes_;
+  const absl::flat_hash_map<std::string, std::string>& getCustomSpanTagMap() const override {
+    return custom_span_tags_;
   }
 
   TimeSource& time_source_;
@@ -450,9 +450,7 @@ struct StreamInfoImpl : public StreamInfo {
 
 private:
   absl::optional<uint32_t> response_code_;
-
-private:
-  absl::flat_hash_map<std::string, std::string> wasm_attributes_;
+  absl::flat_hash_map<std::string, std::string> custom_span_tags_;
 
 public:
   absl::optional<std::string> response_code_details_;

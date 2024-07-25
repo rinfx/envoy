@@ -553,6 +553,14 @@ TEST_F(StreamInfoImplTest, DownstreamTransportFailureReason) {
   EXPECT_EQ(stream_info.downstreamTransportFailureReason(), "TLS error");
 }
 
+TEST_F(StreamInfoImplTest, SetCustomSpanTag) {
+  StreamInfoImpl stream_info(test_time_.timeSystem(), nullptr);
+  stream_info.setCustomSpanTag("test_key", "test_value");
+  const auto& map = stream_info.getCustomSpanTagMap();
+  EXPECT_TRUE(map.find("test_key") != map.end());
+  EXPECT_EQ(map.find("test_key")->second, "test_value");
+}
+
 TEST(UpstreamInfoImplTest, DumpState) {
   UpstreamInfoImpl upstream_info;
 
