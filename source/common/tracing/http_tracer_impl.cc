@@ -165,10 +165,15 @@ void HttpTracerUtility::finalizeDownstreamSpan(Span& span,
                   request_headers->getClientTraceIdValue());
     }
 
-    for (const auto& it: stream_info.filterState().getDataStorage()) {
-      if (it.first.size() > 5 && it.first.substr(0, 5) == "wasm.") {
-        span.setTag(it.first.substr(5), it.second->data_->serializeAsString().value());
-      }
+    // for (const auto& it: stream_info.filterState().getDataStorage()) {
+    //   if (it.first.size() > 5 && it.first.substr(0, 5) == "wasm.") {
+    //     span.setTag(it.first.substr(5), it.second->data_->serializeAsString().value());
+    //   }
+    // }
+
+    const auto& wasm_attributes = stream_info.getWasmAttributeMap();
+    for (const auto& it: wasm_attributes) {
+      span.setTag(it.first, it.second);
     }
 
     if (Grpc::Common::isGrpcRequestHeaders(*request_headers)) {

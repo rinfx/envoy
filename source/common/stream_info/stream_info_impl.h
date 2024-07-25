@@ -428,6 +428,19 @@ struct StreamInfoImpl : public StreamInfo {
     should_drain_connection_ = should_drain;
   }
 
+  void setWasmAttribute(std::string_view key, std::string_view value) override {
+    auto it = wasm_attributes_.find(key);
+    if (it != wasm_attributes_.end()) {
+      it->second = value;
+    } else {
+      wasm_attributes_.emplace(key, value);
+    }
+  }
+
+  const absl::flat_hash_map<std::string, std::string>& getWasmAttributeMap() const override {
+    return wasm_attributes_;
+  }
+
   TimeSource& time_source_;
   SystemTime start_time_;
   MonotonicTime start_time_monotonic_;
@@ -437,6 +450,9 @@ struct StreamInfoImpl : public StreamInfo {
 
 private:
   absl::optional<uint32_t> response_code_;
+
+private:
+  absl::flat_hash_map<std::string, std::string> wasm_attributes_;
 
 public:
   absl::optional<std::string> response_code_details_;

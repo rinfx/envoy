@@ -248,7 +248,7 @@ public:
    **/
   virtual ObjectsPtr objectsSharedWithUpstreamConnection() const PURE;
 
-  virtual const absl::flat_hash_map<std::string, std::unique_ptr<FilterObject>>& getDataStorage() const PURE;
+  // virtual const absl::flat_hash_map<std::string, std::unique_ptr<FilterObject>>& getDataStorage() const PURE;
 };
 
 } // namespace StreamInfo

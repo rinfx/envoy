@@ -961,6 +961,10 @@ public:
    * finished sending and receiving.
    */
   virtual void setShouldDrainConnectionUponCompletion(bool should_drain) PURE;
+
+  virtual void setWasmAttribute(std::string_view key, std::string_view value) PURE;
+
+  virtual const absl::flat_hash_map<std::string, std::string>& getWasmAttributeMap() const PURE;
 };
 
 // An enum representation of the Proxy-Status error space.

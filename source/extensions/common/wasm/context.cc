@@ -1128,6 +1128,10 @@ WasmResult Context::setProperty(std::string_view path, std::string_view value) {
   if (!stream_info) {
     return WasmResult::NotFound;
   }
+  if (path.size() > 6 && path.substr(0, 6) == "trace.") {
+    stream_info->setWasmAttribute(path.substr(6), value);
+    return WasmResult::Ok;
+  }
   std::string key;
   absl::StrAppend(&key, CelStateKeyPrefix, toAbslStringView(path));
   CelState* state = stream_info->filterState()->getDataMutable<CelState>(key);

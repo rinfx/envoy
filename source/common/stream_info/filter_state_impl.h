@@ -53,9 +53,9 @@ public:
 
   FilterState::LifeSpan lifeSpan() const override { return life_span_; }
   FilterStateSharedPtr parent() const override { return parent_; }
-  const absl::flat_hash_map<std::string, std::unique_ptr<FilterObject>>& getDataStorage() const override { 
-    return data_storage_; 
-  }
+  // const absl::flat_hash_map<std::string, std::unique_ptr<FilterObject>>& getDataStorage() const override { 
+  //   return data_storage_; 
+  // }
 
 private:
   // This only checks the local data_storage_ for data_name existence.
