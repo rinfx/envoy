@@ -238,6 +238,10 @@ void Filter::onComplete(Filters::Common::ExtAuthz::ResponsePtr&& response) {
   using Filters::Common::ExtAuthz::CheckStatus;
   Stats::StatName empty_stat_name;
 
+  ProtobufWkt::Value ext_authz_response_code;
+  ext_authz_response_code.set_number_value(enumToInt(response->status_code));
+  (*response->dynamic_metadata.mutable_fields())["status_code"] = ext_authz_response_code;
+
   if (!response->dynamic_metadata.fields().empty()) {
     // Add duration of call to dynamic metadata if applicable
     if (start_time_.has_value() && response->status == CheckStatus::OK) {
@@ -251,6 +255,10 @@ void Filter::onComplete(Filters::Common::ExtAuthz::ResponsePtr&& response) {
     }
     decoder_callbacks_->streamInfo().setDynamicMetadata("envoy.filters.http.ext_authz",
                                                         response->dynamic_metadata);
+  }
+
+  for (const auto &it : response->dynamic_metadata.fields()) {
+    ENVOY_LOG(info, "key: {}, value: {}", it.first, it.second.string_value());
   }
 
   switch (response->status) {
