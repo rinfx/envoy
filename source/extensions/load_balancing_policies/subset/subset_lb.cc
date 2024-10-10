@@ -247,6 +247,12 @@ HostConstSharedPtr SubsetLoadBalancer::chooseHost(LoadBalancerContext* context) 
   }
 
   LoadBalancerContextWrapper context_no_metadata_fallback = removeMetadataFallbackList(context);
+
+  auto host = chooseHostIteration(&context_no_metadata_fallback);
+  if (host) {
+    return host;
+  }
+
   return chooseHostWithMetadataFallbacks(&context_no_metadata_fallback,
                                          metadata_fallbacks->list_value().values());
 }
