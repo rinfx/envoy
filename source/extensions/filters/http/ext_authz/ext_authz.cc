@@ -117,7 +117,24 @@ Http::FilterHeadersStatus Filter::decodeHeaders(Http::RequestHeaderMap& headers,
           Filters::Common::ExtAuthz::ResponseCodeDetails::get().AuthzError);
       return Http::FilterHeadersStatus::StopIteration;
     }
+    ENVOY_STREAM_LOG(info, "not match for ext_authz", *decoder_callbacks_);
     return Http::FilterHeadersStatus::Continue;
+  }
+  auto direct_response = route->directResponseEntry();
+  if(direct_response != nullptr) {
+    std::string new_uri;
+    if (headers.Path()) {
+      new_uri = direct_response->newUri(headers);
+    }
+    // See https://tools.ietf.org/html/rfc7231#section-7.1.2.
+    const auto add_location =
+        direct_response->responseCode() == Http::Code::Created ||
+        Http::CodeUtility::is3xx(enumToInt(direct_response->responseCode()));
+    if (!new_uri.empty() && add_location) {
+      ENVOY_STREAM_LOG(info, "return direct response to avoid unnecessary external auth service calls", *decoder_callbacks_);
+      // Router will send relocation local reply
+      return Http::FilterHeadersStatus::Continue;
+    }
   }
 
   request_headers_ = &headers;
