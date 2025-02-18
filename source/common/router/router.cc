@@ -331,7 +331,7 @@ void Filter::chargeUpstreamCode(uint64_t response_status_code,
     Stats::StatName upstream_zone = upstreamZone(upstream_host);
     Http::CodeStats::ResponseStatInfo info{
         config_.scope_,
-        cluster_->statsScope(),
+        cluster_?cluster_->statsScope():config_.scope_,
         config_.empty_stat_name_,
         response_status_code,
         internal_request,
@@ -348,7 +348,7 @@ void Filter::chargeUpstreamCode(uint64_t response_status_code,
 
     if (alt_stat_prefix_ != nullptr) {
       Http::CodeStats::ResponseStatInfo alt_info{config_.scope_,
-                                                 cluster_->statsScope(),
+                                                 cluster_?cluster_->statsScope():config_.scope_,
                                                  alt_stat_prefix_->statName(),
                                                  response_status_code,
                                                  internal_request,
@@ -454,19 +454,6 @@ Http::FilterHeadersStatus Filter::decodeHeaders(Http::RequestHeaderMap& headers,
                       route_entry_->clusterName());
     };
   }
-  Upstream::ThreadLocalCluster* cluster =
-      config_.cm_.getThreadLocalCluster(route_entry_->clusterName());
-  if (!cluster) {
-    stats_.no_cluster_.inc();
-    ENVOY_STREAM_LOG(debug, "unknown cluster '{}'", *callbacks_, route_entry_->clusterName());
-
-    callbacks_->streamInfo().setResponseFlag(StreamInfo::ResponseFlag::NoClusterFound);
-    callbacks_->sendLocalReply(route_entry_->clusterNotFoundResponseCode(), "", modify_headers,
-                               absl::nullopt,
-                               StreamInfo::ResponseCodeDetails::get().ClusterNotFound);
-    return Http::FilterHeadersStatus::StopIteration;
-  }
-  cluster_ = cluster->info();
 
   // Set up stat prefixes, etc.
   request_vcluster_ = route_entry_->virtualCluster(headers);
@@ -474,6 +461,22 @@ Http::FilterHeadersStatus Filter::decodeHeaders(Http::RequestHeaderMap& headers,
     callbacks_->streamInfo().setVirtualClusterName(request_vcluster_->name());
   }
   route_stats_context_ = route_entry_->routeStatsContext();
+
+  Upstream::ThreadLocalCluster* cluster =
+      config_.cm_.getThreadLocalCluster(route_entry_->clusterName());
+  if (!cluster) {
+    stats_.no_cluster_.inc();
+    ENVOY_STREAM_LOG(debug, "unknown cluster '{}'", *callbacks_, route_entry_->clusterName());
+
+    callbacks_->streamInfo().setResponseFlag(StreamInfo::ResponseFlag::NoClusterFound);
+    chargeUpstreamCode(Http::Code::ServiceUnavailable, nullptr, false);
+    callbacks_->sendLocalReply(route_entry_->clusterNotFoundResponseCode(), "", modify_headers,
+                               absl::nullopt,
+                               StreamInfo::ResponseCodeDetails::get().ClusterNotFound);
+    return Http::FilterHeadersStatus::StopIteration;
+  }
+  cluster_ = cluster->info();
+
   ENVOY_STREAM_LOG(debug, "cluster '{}' match for URL '{}'", *callbacks_,
                    route_entry_->clusterName(), headers.getPathValue());
 

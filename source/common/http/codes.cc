@@ -81,21 +81,25 @@ void CodeStatsImpl::chargeResponseStat(const ResponseStatInfo& info,
   const Code code = static_cast<Code>(info.response_status_code_);
 
   ASSERT(&info.cluster_scope_.symbolTable() == &symbol_table_);
-  chargeBasicResponseStat(info.cluster_scope_, info.prefix_, code, exclude_http_code_stats);
+  if (&info.cluster_scope_ != &info.global_scope_) {
+    chargeBasicResponseStat(info.cluster_scope_, info.prefix_, code, exclude_http_code_stats);
+  }
 
   const Stats::StatName rq_group = upstreamRqGroup(code);
   const Stats::StatName rq_code = upstreamRqStatName(code);
 
   // If the response is from a canary, also create canary stats.
-  if (info.upstream_canary_) {
+  if (&info.cluster_scope_ != &info.global_scope_ && info.upstream_canary_) {
     writeCategory(info, rq_group, rq_code, canary_);
   }
 
-  // Split stats into external vs. internal.
-  if (info.internal_request_) {
-    writeCategory(info, rq_group, rq_code, internal_);
-  } else {
-    writeCategory(info, rq_group, rq_code, external_);
+  if (&info.cluster_scope_ != &info.global_scope_) {
+    // Split stats into external vs. internal.
+    if (info.internal_request_) {
+      writeCategory(info, rq_group, rq_code, internal_);
+    } else {
+      writeCategory(info, rq_group, rq_code, external_);
+    }
   }
 
   // Handle request virtual cluster.
@@ -119,7 +123,7 @@ void CodeStatsImpl::chargeResponseStat(const ResponseStatInfo& info,
   }
 
   // Handle per zone stats.
-  if (!info.from_zone_.empty() && !info.to_zone_.empty()) {
+  if (&info.cluster_scope_ != &info.global_scope_ && !info.from_zone_.empty() && !info.to_zone_.empty()) {
     incCounter(info.cluster_scope_,
                {info.prefix_, zone_, info.from_zone_, info.to_zone_, upstream_rq_completed_});
     incCounter(info.cluster_scope_,
