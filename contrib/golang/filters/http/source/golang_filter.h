@@ -164,6 +164,7 @@ public:
   void onStreamComplete() override {}
 
   CAPIStatus continueStatus(GolangStatus status);
+  CAPIStatus setOverrideUpstreamHost(absl::string_view host);
 
   CAPIStatus sendLocalReply(Http::Code response_code, std::string body_text,
                             std::function<void(Http::ResponseHeaderMap& headers)> modify_headers,

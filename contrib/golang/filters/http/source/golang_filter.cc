@@ -570,6 +570,21 @@ CAPIStatus Filter::continueStatus(GolangStatus status) {
   return CAPIStatus::CAPIOK;
 }
 
+CAPIStatus Filter::setOverrideUpstreamHost(absl::string_view host) {
+  Thread::LockGuard lock(mutex_);
+  if (has_destroyed_) {
+    ENVOY_LOG(debug, "golang filter has been destroyed");
+    return CAPIStatus::CAPIFilterIsDestroy;
+  }
+  auto& state = getProcessorState();
+  if (!state.isProcessingInGo()) {
+    ENVOY_LOG(debug, "golang filter is not processing Go");
+    return CAPIStatus::CAPINotInGo;
+  }
+  state.setOverrideUpstreamHost(host);
+  return CAPIStatus::CAPIOK;
+}
+
 CAPIStatus Filter::getHeader(absl::string_view key, GoString* go_value) {
   Thread::LockGuard lock(mutex_);
   if (has_destroyed_) {

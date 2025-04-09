@@ -451,6 +451,14 @@ public:
     return std::make_unique<HostHandleImpl>(shared_from_this());
   }
 
+  absl::string_view getEndpointMetrics() const override {
+    return endpoint_metrics_;
+  }
+  
+  void setEndpointMetrics(absl::string_view endpoint_metrics) override {
+    endpoint_metrics_ = endpoint_metrics;
+  }
+
 protected:
   static CreateConnectionData
   createConnection(Event::Dispatcher& dispatcher, const ClusterInfo& cluster,
@@ -488,6 +496,7 @@ private:
     const std::weak_ptr<const HostImpl> parent_;
   };
   mutable std::atomic<uint32_t> handle_count_{};
+  std::string endpoint_metrics_;
 };
 
 class HostsPerLocalityImpl : public HostsPerLocality {

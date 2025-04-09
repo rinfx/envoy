@@ -163,6 +163,8 @@ public:
                               std::function<void(Http::ResponseHeaderMap& headers)> modify_headers,
                               Grpc::Status::GrpcStatus grpc_status, absl::string_view details) PURE;
 
+  virtual void setOverrideUpstreamHost(absl::string_view) {}
+
   const StreamInfo::StreamInfo& streamInfo() const { return filter_callbacks_->streamInfo(); }
   StreamInfo::StreamInfo& streamInfo() { return filter_callbacks_->streamInfo(); }
 
@@ -216,6 +218,12 @@ public:
     decoder_callbacks_->sendLocalReply(response_code, body_text, modify_headers, grpc_status,
                                        details);
   };
+
+  void setOverrideUpstreamHost(absl::string_view host) override {
+    ENVOY_LOG(info, "overrideUpstreamHost: {}", host);
+    decoder_callbacks_->setUpstreamOverrideHost(host);
+  }
+
 
 private:
   Http::StreamDecoderFilterCallbacks* decoder_callbacks_{nullptr};

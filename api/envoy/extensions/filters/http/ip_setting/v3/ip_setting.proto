@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package envoy.extensions.filters.http.ip_setting.v3;
+
+import "udpa/annotations/status.proto";
+import "validate/validate.proto";
+
+option java_package = "io.envoyproxy.envoy.extensions.filters.http.ip_setting.v3";
+option java_outer_classname = "IpSettingProto";
+option java_multiple_files = true;
+option go_package = "github.com/envoyproxy/go-control-plane/envoy/extensions/filters/http/ip_setting/v3;ip_settingv3";
+option (udpa.annotations.file_status).package_version_status = ACTIVE;
+
+// [#protodoc-title: IP Setting]
+// Kill Request :ref:`configuration overview <config_http_filters_ip_setting>`.
+// [#extension: envoy.filters.http.ip_setting]
+
+// Configuration for AIStatistic filter.
+message IPSetting {
+  string placeholder = 1;
+}

@@ -113,6 +113,10 @@ func (r *httpRequest) SendLocalReply(responseCode int, bodyText string, headers 
 	cAPI.HttpSendLocalReply(unsafe.Pointer(r.req), responseCode, bodyText, headers, grpcStatus, details)
 }
 
+func (r *httpRequest) SetOverrideUpstreamHost(host string) {
+	cAPI.HttpSetOverrideUpstreamHost(unsafe.Pointer(r.req), host)
+}
+
 func (r *httpRequest) Log(level api.LogType, message string) {
 	// TODO performance optimization points:
 	// Add a new goroutine to write logs asynchronously and avoid frequent cgo calls

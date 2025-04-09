@@ -18,6 +18,7 @@ HealthCheckerImplBase::HealthCheckerImplBase(const Cluster& cluster,
                                              Random::RandomGenerator& random,
                                              HealthCheckEventLoggerPtr&& event_logger)
     : always_log_health_check_failures_(config.always_log_health_check_failures()),
+      is_llm_service_(config.is_llm_service()),
       cluster_(cluster), dispatcher_(dispatcher),
       timeout_(PROTOBUF_GET_MS_REQUIRED(config, timeout)),
       unhealthy_threshold_(PROTOBUF_GET_WRAPPED_REQUIRED(config, unhealthy_threshold)),

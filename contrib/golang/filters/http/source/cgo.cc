@@ -80,6 +80,13 @@ CAPIStatus envoyGoFilterHttpContinue(void* r, int status) {
   });
 }
 
+CAPIStatus envoyGoFilterHttpSetOverrideUpstreamHost(void* r, void* host) {
+  return envoyGoFilterHandlerWrapper(r, [host](std::shared_ptr<Filter>& filter) -> CAPIStatus {
+    auto host_str = referGoString(host);
+    return filter->setOverrideUpstreamHost(host_str);
+  });
+}
+
 CAPIStatus envoyGoFilterHttpSendLocalReply(void* r, int response_code, void* body_text,
                                            void* headers, long long int grpc_status,
                                            void* details) {

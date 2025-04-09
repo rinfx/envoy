@@ -95,6 +95,11 @@ func (c *httpCApiImpl) HttpSendLocalReply(r unsafe.Pointer, response_code int, b
 	handleCApiStatus(res)
 }
 
+func (c *httpCApiImpl) HttpSetOverrideUpstreamHost(r unsafe.Pointer, host string) {
+	res := C.envoyGoFilterHttpSetOverrideUpstreamHost(r, unsafe.Pointer(&host))
+	handleCApiStatus(res)
+}
+
 func (c *httpCApiImpl) HttpSendPanicReply(r unsafe.Pointer, details string) {
 	res := C.envoyGoFilterHttpSendPanicReply(r, unsafe.Pointer(&details))
 	handleCApiStatus(res)

@@ -135,6 +135,7 @@ type FilterCallbacks interface {
 	Log(level LogType, msg string)
 	LogLevel() LogType
 	// TODO add more for filter callbacks
+	SetOverrideUpstreamHost(host string)
 }
 
 type FilterCallbackHandler interface {

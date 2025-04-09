@@ -45,6 +45,7 @@ CAPIStatus envoyGoFilterHttpContinue(void* r, int status);
 CAPIStatus envoyGoFilterHttpSendLocalReply(void* r, int response_code, void* body_text,
                                            void* headers, long long int grpc_status, void* details);
 CAPIStatus envoyGoFilterHttpSendPanicReply(void* r, void* details);
+CAPIStatus envoyGoFilterHttpSetOverrideUpstreamHost(void* r, void* host);
 
 CAPIStatus envoyGoFilterHttpGetHeader(void* r, void* key, void* value);
 CAPIStatus envoyGoFilterHttpCopyHeaders(void* r, void* strs, void* buf);

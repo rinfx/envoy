@@ -187,6 +187,7 @@ proto_library(
         "//envoy/extensions/filters/http/header_mutation/v3:pkg",
         "//envoy/extensions/filters/http/header_to_metadata/v3:pkg",
         "//envoy/extensions/filters/http/health_check/v3:pkg",
+        "//envoy/extensions/filters/http/ip_setting/v3:pkg",
         "//envoy/extensions/filters/http/ip_tagging/v3:pkg",
         "//envoy/extensions/filters/http/jwt_authn/v3:pkg",
         "//envoy/extensions/filters/http/kill_request/v3:pkg",
