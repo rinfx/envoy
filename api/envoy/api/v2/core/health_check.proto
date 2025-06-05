@@ -56,7 +56,7 @@ enum HealthStatus {
   DEGRADED = 5;
 }
 
-// [#next-free-field: 23]
+// [#next-free-field: 28]
 message HealthCheck {
   // Describes the encoding of the payload bytes in the payload.
   message Payload {
@@ -306,4 +306,6 @@ message HealthCheck {
 
   // This allows overriding the cluster TLS settings, just for health check connections.
   TlsOptions tls_options = 21;
+
+  bool is_llm_service = 27;
 }

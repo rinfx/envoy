@@ -213,6 +213,7 @@ void HttpHealthCheckerImpl::HttpActiveHealthCheckSession::decodeHeaders(
 
 void HttpHealthCheckerImpl::HttpActiveHealthCheckSession::decodeData(Buffer::Instance& data,
                                                                      bool end_stream) {
+  ENVOY_CONN_LOG(info, "is_llm_service={}", *client_, parent_.is_llm_service_);
   if (parent_.is_llm_service_) {
     response_body_->move(data, data.length());
   } else if (parent_.response_buffer_size_ != 0) {
